@@ -87,6 +87,10 @@
   margin:1rem 0
 }
 
+.roles button:last-child:nth-child(odd){
+  grid-column:1/-1
+}
+
 .roles button{
   border:0;
   background:0;

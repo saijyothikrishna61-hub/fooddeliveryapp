@@ -29,7 +29,7 @@ PAGES.login={
   title:'Login',
   render(){
     return `<div class=auth><section class=hero><!-- Replace this image with your login hero image: assets/images/login-food.svg --><img class=bg src="${IMG('login-food')}" alt="Delicious food spread"><div class=logo><img src="${IMG('logo')}" alt="${BRAND.name} logo">${BRAND.name}</div><div><h1>${BRAND.tag.replace('. ','.<br>')}</h1><p>Your favorite meals, just a few clicks away.</p></div><small>© ${BRAND.name}</small></section>
-<section class=pane><form class=logincard id=lf novalidate><div class=top><img src="${IMG('logo')}" alt="logo"><h2>${BRAND.name}</h2><h3>Welcome Back</h3><p class=muted>Login to continue</p></div><div class=roles role=group aria-label="Login as"><button type=button data-r=customer>🍴 Customer</button><button type=button data-r=owner>🏪 Restaurant Owner</button></div>
+<section class=pane><form class=logincard id=lf novalidate><div class=top><img src="${IMG('logo')}" alt="logo"><h2>${BRAND.name}</h2><h3>Welcome Back</h3><p class=muted>Login to continue</p></div><div class=roles role=group aria-label="Login as"><button type=button data-r=customer>🍴 Customer</button><button type=button data-r=owner>🏪 Restaurant Owner</button><button type=button data-r=admin>🛡️ Admin</button></div>
 <label for=em>Email / Username</label><input id=em autocomplete=username placeholder="you@example.com"><label for=pw>Password</label><div class=pw><input id=pw type=password autocomplete=current-password placeholder="Enter password"><button type=button id=eye aria-label="Show password">👁</button></div>
 <div class=rm><label><input type=checkbox id=rem> Remember me</label><a href=# id=fp>Forgot Password?</a></div><button class="btn block">Login</button><div class=err id=msg role=alert></div>
 <p class=muted style="text-align:center" id=reg>Don't have an account? <a href="${L('register.html')}"><b>Create Customer Account</b></a></p><div class=demo id=dm></div></form></section></div>`
@@ -39,7 +39,8 @@ PAGES.login={
 
     const D={
       customer:['customer@example.com','customer123'],
-      owner:['owner@example.com','owner123']
+      owner:['saikrishnakatapalli@gmail.com','owner123'],
+      admin:['admin@foodnest.com','admin123']
     };
 
     const set=r=>{
@@ -79,12 +80,13 @@ PAGES.login={
       if(!x){
         const u=S.get('users').find(u=>u.email==em||u.name.toLowerCase()==em);
         if(!u||u.pass!==pw)x='Incorrect email or password';
-        else if(u.role!==role)x=`This is not a ${role=='owner'?'restaurant owner':'customer'} account`;
+        else if(u.disabled)x='This account has been blocked';
+        else if(u.role!==role)x=`This is not a ${role=='owner'?'restaurant owner':role=='admin'?'platform admin':'customer'} account`;
         else{
           S.set('session',{email:u.email,name:u.name,role:u.role});
           S.set('remember',$('#rem').checked?em:'');
           toast('Login successful');
-          setTimeout(()=>location.href=L(role=='owner'?'owner-dashboard.html':'customer-dashboard.html'),600);
+          setTimeout(()=>location.href=L(role=='owner'?'owner-dashboard.html':role=='admin'?'admin-dashboard.html':'customer-dashboard.html'),600);
           return
         }
       }

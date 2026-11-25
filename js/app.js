@@ -40,6 +40,10 @@ if(!S.get('foods')){
   S.set('notifs',['Your account is ready. Start ordering!','Welcome to '+BRAND.name+'!'])
 }
 
+if(!S.get('users',[]).some(u=>u.role=='admin')){
+  S.set('users',[...S.get('users',[]),{name:'Platform Admin',email:'admin@foodnest.com',pass:'admin123',role:'admin',mobile:'9000000000',disabled:false}])
+}
+
 const me=()=>S.get('session');
 
 const curUser=()=>S.get('users').find(u=>u.email==me().email);
@@ -152,12 +156,21 @@ const ONAV=[
   ['⚙️','Settings','owner-settings']
 ];
 
+const ANAV=[
+  ['📊','Overview','admin-dashboard'],
+  ['👥','Users','admin-dashboard?tab=users'],
+  ['🏪','Restaurants','admin-dashboard?tab=restaurants'],
+  ['🍽️','Menu','admin-dashboard?tab=menu'],
+  ['📦','Orders','admin-dashboard?tab=orders']
+];
+
 function shell(P){
   const s=me(),
   u=curUser()||s,
   own=P.role=='owner',
+  admin=P.role=='admin',
   cur=location.pathname.split('/').pop().replace('.html',''),
-  nav=own?ONAV:CNAV,
+  nav=admin?ANAV:own?ONAV:CNAV,
   n=S.get('notifs',[]);
 
   const act=pg=>{
@@ -168,11 +181,11 @@ function shell(P){
 
   const lnk=pg=>pg=='#help'?'#':L(pg.replace(/^([^?#]+)/,'$1.html'));
 
-  $('#app').innerHTML=`<div class=layout><aside class=side id=side><a class=brand href="${L(own?'owner-dashboard.html':'customer-dashboard.html')}"><img src="${IMG('logo')}" alt="${BRAND.name} logo"><span>${BRAND.name}</span></a><nav>${nav.map(([i,t,p])=>`<a href="${lnk(p)}" class="${act(p)?'on':''}" ${p=='#help'?'data-help':''}>${i} ${t}</a>`).join('')}<a href=# id=lo>🚪 Logout</a></nav></aside>
-  <div class=content><header class=top><button class="icon burger" id=bg aria-label=Menu>☰</button>${own?'':`<form id=sf class=sbox><input name=q placeholder="Search restaurants or dishes..." aria-label=Search></form>`}<span class=sp></span>
+  $('#app').innerHTML=`<div class=layout><aside class=side id=side><a class=brand href="${L(admin?'admin-dashboard.html':own?'owner-dashboard.html':'customer-dashboard.html')}"><img src="${IMG('logo')}" alt="${BRAND.name} logo"><span>${BRAND.name}</span></a><nav>${nav.map(([i,t,p])=>`<a href="${lnk(p)}" class="${act(p)?'on':''}" ${p=='#help'?'data-help':''}>${i} ${t}</a>`).join('')}<a href=# id=lo>🚪 Logout</a></nav></aside>
+  <div class=content><header class=top><button class="icon burger" id=bg aria-label=Menu>☰</button>${own||admin?'':`<form id=sf class=sbox><input name=q placeholder="Search restaurants or dishes..." aria-label=Search></form>`}<span class=sp></span>
   <div class=dd><button class=icon id=nb aria-label=Notifications>🔔<i class=dot>${n.length}</i></button><div class=menu id=nm>${n.map(x=>`<p>🔔 ${x}</p>`).join('')||'<p>No notifications</p>'}</div></div>
-  ${own?'':`<a class=icon href="${L('cart.html')}" aria-label=Cart>🛒<i class=dot id=cc>0</i></a>`}
-  <div class=dd><button class=prof id=pb><img src="${u.photo||IMG('profile')}" alt=""><span>${s.name.split(' ')[0]}</span></button><div class=menu id=pm><a href="${L(own?'owner-profile.html':'profile.html')}">👤 Profile</a><a href=# id=lo2>🚪 Logout</a></div></div></header><main id=main></main></div></div>`;
+  ${own||admin?'':`<a class=icon href="${L('cart.html')}" aria-label=Cart>🛒<i class=dot id=cc>0</i></a>`}
+  <div class=dd><button class=prof id=pb><img src="${u.photo||IMG('profile')}" alt=""><span>${s.name.split(' ')[0]}</span></button><div class=menu id=pm>${admin?'':`<a href="${L(own?'owner-profile.html':'profile.html')}">👤 Profile</a>`}<a href=# id=lo2>🚪 Logout</a></div></div></header><main id=main></main></div></div>`;
 
   $('#bg').onclick=e=>{
     e.stopPropagation();

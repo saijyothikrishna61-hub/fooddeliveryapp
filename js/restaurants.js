@@ -10,7 +10,7 @@ function filterR(o){
     const rf=fs.filter(f=>f.rid==r.id),
     q=(o.q||'').toLowerCase();
 
-    return (!q||[r.name,r.cuisine,...rf.map(f=>f.name)].join(' ').toLowerCase().includes(q))
+    return r.active!==false&&(!q||[r.name,r.cuisine,...rf.map(f=>f.name)].join(' ').toLowerCase().includes(q))
       &&(!o.cat||rf.some(f=>f.cat==o.cat))
       &&(!o.price||r.price<=+o.price)
       &&(!o.rating||r.rating>=+o.rating)
@@ -64,7 +64,7 @@ PAGES['customer-dashboard']={
     return `<h1>Good ${g}, ${n}! 👋</h1><p class=muted>What are you craving today?</p><form class=searchbar id=ds><input name=q placeholder="Search for restaurants, dishes or cuisines..." aria-label=Search><button class=btn>🔍 Search</button><a class="btn ghost" href="${L('restaurants.html')}">⚙ Filters & Sort</a></form>
 ${ao?`<div class="card row between"><div><b>Order #${ao.id}</b> is <span class="badge s${ao.st}">${ST[ao.st]}</span></div><a class="btn sm" href="${L('tracking.html?id='+ao.id)}">Track Order</a></div>`:''}
 <h2 class=sec>Categories</h2><div class=cats>${CATS.map(c=>`<a class=cat href="${L('restaurants.html?cat='+encodeURIComponent(c))}"><img src="${IMG(slug(c))}" alt="${c}"><span>${c}</span></a>`).join('')}</div>
-<h2 class=sec>Restaurants</h2><div class=grid>${S.get('restaurants').map(restCard).join('')}</div>`
+<h2 class=sec>Restaurants</h2><div class=grid>${S.get('restaurants').filter(r=>r.active!==false).map(restCard).join('')}</div>`
   },
 
   init(){

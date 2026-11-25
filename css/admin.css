@@ -1,0 +1,9 @@
+.admin-tabs{margin:1rem 0 1.4rem}
+.admin-tabs a{white-space:nowrap}
+.admin-filters{display:grid;grid-template-columns:minmax(220px,1fr) minmax(150px,240px);gap:.7rem;margin-bottom:1rem}
+.admin-check{display:flex;align-items:center;gap:.55rem;margin:.85rem 0}
+.admin-check input{width:auto}
+.admin-dashboard h1{margin-bottom:.3rem}
+.admin-dashboard .stats{margin-top:1.4rem}
+.admin-dashboard .card .row.between{margin-bottom:.8rem}
+@media(max-width:600px){.admin-filters{grid-template-columns:1fr}.admin-tabs{margin-top:.7rem}}

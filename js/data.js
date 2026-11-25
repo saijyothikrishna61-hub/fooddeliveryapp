@@ -162,6 +162,13 @@ const USERS=[
     pass:'owner123',
     role:'owner',
     mobile:'9381860939'
+  },
+  {
+    name:'Platform Admin',
+    email:'admin@foodnest.com',
+    pass:'admin123',
+    role:'admin',
+    mobile:'9000000000'
   }
 ];
 
